@@ -13,3 +13,5 @@
   <li>Файл countAdj.py строит частотник по newNewData1.json.json</li>
 </ol>
 Остальные программные файл либо помогали мне в чем-то, но не важны, либо делают то, что я не успела проанализировать/придумать как присобачить (tfIdf)
+
+https://docs.google.com/presentation/d/1Pnkr1WxZd2aupBaYVKI1_hiZMu1FicvEFABQCppCEHE/edit?usp=sharing
