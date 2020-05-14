@@ -3,15 +3,15 @@ import string
 
 to_save = ""
 if __name__ == "__main__":
-    # path = 'bil1/'
-    # for name in range(1, 41):
-    #     spans = {}
-    #     # по очереди открываем файлы и извлекаем имена
-    #     with open(path + str(name), 'r', encoding='utf-8') as f:
-    #         text = f.read()
-    #         for i in string.punctuation+"<«>»-—":
-    #             text = text.replace(i, " ")
-    #         to_save+= text
+    path = 'bil1/'
+    for name in range(1, 41):
+        spans = {}
+        # по очереди открываем файлы и извлекаем имена
+        with open(path + str(name), 'r', encoding='utf-8') as f:
+            text = f.read()
+            for i in string.punctuation+"<«>»-—":
+                text = text.replace(i, " ")
+            to_save+= text
     with open("warpeace1.txt", 'r', encoding='cp1251') as f:
         text = f.read()
         for i in string.punctuation+"<«>»-—":

@@ -29,9 +29,9 @@ def foo(name):
             #     input()
     freq = Counter(words1)
     string=""
-    for i in freq:
+    for i in sorted(freq, key=lambda s: -freq.get(s)):
         if (i != None and freq.get(i) != None):
-            string += i + "\t" + str(freq.get(i) / q) + "\n"
+            string += i + "\t" + str(round(freq.get(i) / q, 3)) + "\n"
     with open("count_parts_" + name, mode="w", encoding="utf-8") as f:
         f.write(string)
 

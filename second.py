@@ -213,6 +213,25 @@ def showSomeName(name):
         print("\t", j)
 
 
+def showComment():
+    for i in newData:
+        print(i)
+        for j in newData[i]["characteristic"]:
+            print(j)
+        inp = input()
+        if (inp == "q"):
+            return
+
+def showSmallComment():
+    for i in newData:
+        print(i)
+        for j in newData[i]["smallCharacteristic"]:
+            print(j)
+        inp = input()
+        if (inp == "q"):
+            return
+
+
 pprint.pprint(newData)
 while True:
     inp = input()
@@ -220,8 +239,15 @@ while True:
         showNames()
     elif inp == "2":
         showNameDict()
+    elif inp == "4":
+        showComment()
+
+    elif inp == "5":
+        showSmallComment()
+
     elif inp.split()[0] == "3":
         showSomeName(inp[2:])
+
 
 
 

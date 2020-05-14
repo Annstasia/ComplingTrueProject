@@ -16,9 +16,9 @@ with open("fileJson2.json", "r") as read_file:
 extractor = NamesExtractor()
 
 
-def appendSpans(span):
-    start = span[0] - 200
-    end = span[1] + 200
+def appendSpans(span, delta, spans):
+    start = span[0] - delta
+    end = span[1] + delta
     # spans[was_names[-1]] = {"Start": [], "End": []} # убрать
     if (was_names[-1] not in spans):
         spans[was_names[-1]] = {"Start": [], "End": []}
@@ -65,24 +65,27 @@ def findX(name, start):
     moreImportant = []
 
     for i in names:
-        if (name.startswith(i)):
-            if (len(names[i]) != 1):
-                print(text[max(start - 100, 0):min(len(text) - 1, start + 100)])
-                print(names[i])
-                inp = input()
-                if (inp != ""):
-                    moreImportant.append(inp)
+        if (i in name and not any([j in name for j in names[i][-1]])):
+            if (name.startswith(i)):
+                if (len(names[i]) != 2):
+                    print(len(names[i]))
+                    print(text[max(start - 100, 0):min(len(text) - 1, start + 100)])
+                    print(names[i])
+                    inp = input()
+                    if (inp != ""):
+                        moreImportant.append(inp)
+                else:
+                    moreImportant.append(names[i][0])
+
             else:
-                moreImportant.append(names[i][0])
-        elif (i in name):
-            if (len(names[i]) != 1):
-                print(text[max(start - 100, 0):min(len(text) - 1, start + 100)])
-                print(names[i])
-                inp = input()
-                if (inp != ""):
-                    lessImportant.append(inp)
-            else:
-                lessImportant.append(names[i][0])
+                if (len(names[i]) != 2):
+                    print(text[max(start - 100, 0):min(len(text) - 1, start + 100)])
+                    print(names[i])
+                    inp = input()
+                    if (inp != ""):
+                        lessImportant.append(inp)
+                else:
+                    lessImportant.append(names[i][0])
             # print(names[i], end=" ")
 
     if (len(moreImportant) != 0):
@@ -98,13 +101,14 @@ def findX(name, start):
 
 morph = pymorphy2.MorphAnalyzer()
 
-extractor = NamesExtractor()
+
 
 path = 'bil1/'
 fnames = os.listdir(path)
 arr = {}
 was_names = []
-spans = {}
+SmallSpans = {}
+LargeSpans = {}
 borders = 200
 
 
@@ -113,7 +117,7 @@ nothing2 = set()
 nothing3 = set()
 
 
-
+extractor = NamesExtractor()
 # Потом поменяю выбор файлов. Так пока удобнее
 for name in range(1, 41):
     spans = {}
@@ -123,11 +127,6 @@ for name in range(1, 41):
     matches = extractor(text)
 
     for match in matches:
-        # spans.append(match.span) # Запоминаю позицию имени, чтобы потом рассмотреть слова поблизости и охарактеризовать героя
-        # обрабатываем извлеченные имена
-        # spans.append(match.span)  # Запоминаю позицию имени, чтобы потом рассмотреть слова поблизости и охарактеризовать героя
-        #
-
         first = ""
         second = ""
         last = ""
@@ -140,7 +139,9 @@ for name in range(1, 41):
 
         if (findX(first + second + last, match.span[0])):
             # print(was_names[-1] == "Илья Муромец")
-            appendSpans(match.span)
+            appendSpans(match.span, 200, LargeSpans)
+            appendSpans(match.span, 50, SmallSpans)
+
             # spans[was_names[-1]].append(match.span)
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -163,16 +164,18 @@ for name in range(1, 41):
     #
     text = text.lower()
     for name in set(was_names):
-        for i in range(len(spans[name]["Start"])):
-            borderLeft = max(0, spans[name]["Start"][i])
+        for i in range(len(LargeSpans[name]["Start"])):
+            largeBorderLeft = max(0, LargeSpans[name]["Start"][i])
+            smallBorderLeft = max(0, SmallSpans[name]["Start"][i])
             # while text[borderLeft] != ' ' and borderLeft < len(text) - 2:
             #     borderLeft += 1
-            borderRight = min(spans[name]["End"][i], len(text) - 1)
+            largeBorderRight = min(LargeSpans[name]["End"][i], len(text) - 1)
+            smallBorderRight = min(SmallSpans[name]["End"][i], len(text) - 1)
+
             # while text[borderRight] != ' ' and borderRight > 0:
             #     borderRight -= 1
-            arr[name]["characteristic"].append(text[borderLeft + 1:borderRight])
-            change = (borderRight - borderLeft) // 3
-            arr[name]["smallCharacteristic"].append(text[borderLeft + 1 + change:borderRight - change])
+            arr[name]["characteristic"].append(text[largeBorderLeft + 1:largeBorderRight])
+            arr[name]["smallCharacteristic"].append(text[smallBorderLeft:smallBorderRight])
 
         # Выбор поддтекста. Из этой части будет извлекаться характеристика персонажей
     #     borderLeft = max(0, i[0] - 200)
